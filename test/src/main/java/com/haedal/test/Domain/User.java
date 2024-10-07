@@ -34,9 +34,9 @@ public class User {
     @Column(name = "image_url")
     private String imageUrl;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Post> posts;
-//
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
+
 //    @OneToMany(mappedBy = "user")
 //    private List<Like> likes;
 //
