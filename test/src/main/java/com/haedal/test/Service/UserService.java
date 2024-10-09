@@ -2,6 +2,7 @@ package com.haedal.test.Service;
 
 
 import com.haedal.test.Domain.User;
+import com.haedal.test.Repository.FollowRepository;
 import com.haedal.test.Repository.PostRepository;
 import com.haedal.test.Repository.UserRepository;
 import com.haedal.test.RequestDTO.UserUpdateRequestDto;
@@ -19,12 +20,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final PostRepository postRepository;
+    private final FollowRepository followRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, ImageService imageService, PostRepository postRepository) {
+    public UserService(FollowRepository followRepository,UserRepository userRepository, ImageService imageService, PostRepository postRepository) {
         this.userRepository = userRepository;
         this.imageService = imageService;
         this.postRepository = postRepository;
+        this.followRepository = followRepository;
     }
 
     public UserSimpleResponseDto saveUser(User newUser) {
@@ -46,7 +49,7 @@ public class UserService {
                 currentUser.getUsername(),
                 currentUser.getName(),
                 imageData,
-                false
+                followRepository.existsByFollowerAndFollowing(currentUser, targetUser)
         );
     }
 
@@ -105,12 +108,12 @@ public class UserService {
                 targetUser.getUsername(),
                 targetUser.getName(),
                 imageData,
-                false,
+                followRepository.existsByFollowerAndFollowing(currentUser, targetUser),
                 targetUser.getBio(),
                 targetUser.getJoinedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm")),
                 postRepository.countByUser(targetUser),
-                0L,
-                0L
+                followRepository.countByFollowing(targetUser),
+                followRepository.countByFollower(targetUser)
         );
     }
 

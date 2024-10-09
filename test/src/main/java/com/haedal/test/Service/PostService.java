@@ -3,6 +3,7 @@ package com.haedal.test.Service;
 
 import com.haedal.test.Domain.Post;
 import com.haedal.test.Domain.User;
+import com.haedal.test.Repository.LikeRepository;
 import com.haedal.test.Repository.PostRepository;
 import com.haedal.test.Repository.UserRepository;
 import com.haedal.test.ResponseDTO.PostResponseDto;
@@ -19,14 +20,16 @@ public class PostService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final ImageService imageService;
+    private final LikeRepository likeRepository;
 
 
     @Autowired
-    public PostService(PostRepository postRepository, UserRepository userRepository, UserService userService, ImageService imageService) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, UserService userService, ImageService imageService, LikeRepository likeRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.userService = userService;
         this.imageService = imageService;
+        this.likeRepository = likeRepository;
     }
     public void savePost(Post post){
         Post saved = postRepository.save(post);
@@ -54,9 +57,11 @@ public class PostService {
                 userSimpleResponseDto,
                 imageData,
                 post.getContent(),
-                0L,
-                false,
+                likeRepository.countByPost(post),
+                likeRepository.existsByUserAndPost(currentUser, post),
                 post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm"))
         );
     }
+
+
 }
